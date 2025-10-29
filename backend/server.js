@@ -10,12 +10,19 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Supabase setup
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
+// Supabase setup - USING YOUR CREDENTIALS
+const supabaseUrl = 'https://yqjdepwusyutrggaooom.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxamRlcHd1c3l1dHJnZ2Fvb29tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE2ODMxMzUsImV4cCI6MjA3NzI1OTEzNX0.QfbfsKMJ1deFgc-a4mZi_7F_cPggHv_7cfyhkZP5HpY';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 console.log('Connected to Supabase database.');
+
+// Create table if not exists
+const createTable = async () => {
+  const { error } = await supabase.rpc('create_feedback_table_if_not_exists');
+  if (error) console.log('Table may already exist:', error.message);
+};
+createTable();
 
 // Routes
 app.get('/feedback', async (req, res) => {
