@@ -87,31 +87,31 @@ const FeedbackForm = () => {
       </header>
       <form onSubmit={handleSubmit} className="form-container">
         <div className="form-group">
-          <label htmlFor="studentName">Student Name *</label>
+          <label htmlFor="studentname">Student Name *</label>
           <input
             type="text"
-            id="studentName"
-            name="studentName"
-            value={formData.studentName}
+            id="studentname"
+            name="studentname"
+            value={formData.studentname}
             onChange={handleChange}
             placeholder="Enter your full name"
-            className={errors.studentName ? 'error' : ''}
+            className={errors.studentname ? 'error' : ''}
           />
-          {errors.studentName && <span className="error-message">{errors.studentName}</span>}
+          {errors.studentname && <span className="error-message">{errors.studentname}</span>}
         </div>
 
         <div className="form-group">
-          <label htmlFor="courseCode">Course Code *</label>
+          <label htmlFor="coursecode">Course Code *</label>
           <input
             type="text"
-            id="courseCode"
-            name="courseCode"
-            value={formData.courseCode}
+            id="coursecode"
+            name="coursecode"
+            value={formData.coursecode}
             onChange={handleChange}
             placeholder="e.g., CS101, MATH201"
-            className={errors.courseCode ? 'error' : ''}
+            className={errors.coursecode ? 'error' : ''}
           />
-          {errors.courseCode && <span className="error-message">{errors.courseCode}</span>}
+          {errors.coursecode && <span className="error-message">{errors.coursecode}</span>}
         </div>
 
         <div className="form-group">
