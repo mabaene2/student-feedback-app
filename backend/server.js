@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { Pool } = require('pg');
+const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 
 const app = express();
@@ -10,80 +10,63 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// PostgreSQL setup with Render's database
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false  // REQUIRED for Render PostgreSQL
-  }
-});
+// Supabase setup - USING YOUR CREDENTIALS
+const supabaseUrl = 'https://yqjdepwusyutrggaooom.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxamRlcHd1c3l1dHJnZ2Fvb29tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE2ODMxMzUsImV4cCI6MjA3NzI1OTEzNX0.QfbfsKMJ1deFgc-a4mZi_7F_cPggHv_7cfyhkZP5HpY';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Initialize database table
-const initializeDatabase = async () => {
-  try {
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS feedback (
-        id SERIAL PRIMARY KEY,
-        studentName VARCHAR(100) NOT NULL,
-        courseCode VARCHAR(20) NOT NULL,
-        comments TEXT,
-        rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-    console.log('Database table ready');
-  } catch (error) {
-    console.error('Database initialization error:', error);
-  }
+console.log('Connected to Supabase database.');
+
+// Create table if not exists
+const createTable = async () => {
+  const { error } = await supabase.rpc('create_feedback_table_if_not_exists');
+  if (error) console.log('Table may already exist:', error.message);
 };
-
-initializeDatabase();
+createTable();
 
 // Routes
 app.get('/feedback', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM feedback ORDER BY created_at DESC');
-    res.json(result.rows);
-  } catch (error) {
-    console.error('GET Error:', error);
+  const { data, error } = await supabase
+    .from('feedback')
+    .select('*');
+
+  if (error) {
     res.status(500).json({ error: error.message });
+    return;
   }
+  res.json(data);
 });
 
 app.post('/feedback', async (req, res) => {
   const { studentname, coursecode, comments, rating } = req.body;
-  
   if (!studentname || !coursecode || !rating) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  try {
-    const result = await pool.query(
-      'INSERT INTO feedback (studentName, courseCode, comments, rating) VALUES ($1, $2, $3, $4) RETURNING *',
-      [studentname, coursecode, comments, rating]
-    );
-    res.json({ id: result.rows[0].id });
-  } catch (error) {
-    console.error('POST Error:', error);
+  const { data, error } = await supabase
+    .from('feedback')
+    .insert([{ studentname, coursecode, comments, rating }])
+    .select();
+
+  if (error) {
     res.status(500).json({ error: error.message });
+    return;
   }
+  res.json({ id: data[0].id });
 });
 
 app.delete('/feedback/:id', async (req, res) => {
   const { id } = req.params;
-  
-  try {
-    const result = await pool.query('DELETE FROM feedback WHERE id = $1', [id]);
-    
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: 'Feedback not found' });
-    }
-    
-    res.json({ message: 'Feedback deleted successfully' });
-  } catch (error) {
-    console.error('DELETE Error:', error);
+  const { error } = await supabase
+    .from('feedback')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
     res.status(500).json({ error: error.message });
+    return;
   }
+  res.json({ message: 'Feedback deleted successfully' });
 });
 
 // Error handling
@@ -94,5 +77,4 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log('Connected to Render PostgreSQL database');
 });
