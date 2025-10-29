@@ -8,30 +8,13 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    fetchFeedbacks();
+  }, []);
+
   const fetchFeedbacks = async () => {
     try {
       const response = await axios.get('https://student-feedback-app-1-6dwe.onrender.com/feedback');
-      setFeedbacks(response.data);
-    } catch (error) {
-      console.error('Error fetching feedbacks:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-=======
-  const fetchFeedbacks = async () => {
-    try {
-      const response = await axios.get('https://student-feedback-app-1-6dwe.onrender.com/feedback');
-      setFeedbacks(response.data);
-    } catch (error) {
-      console.error('Error fetching feedbacks:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-=======
-      const response = await axios.get('https://student-feedback-app-1-6dwe.onrender.com');
->>>>>>> fca28c7d5c9118f6941fd3f866b03a7b9cec14b3
       setFeedbacks(response.data);
     } catch (error) {
       console.error('Error fetching feedbacks:', error);
@@ -89,8 +72,8 @@ const Dashboard = () => {
           <tbody>
             {feedbacks.map((feedback) => (
               <tr key={feedback.id}>
-                <td>{feedback.studentName}</td>
-                <td className="course-code">{feedback.courseCode}</td>
+                <td>{feedback.studentname}</td>
+                <td className="course-code">{feedback.coursecode}</td>
                 <td className="rating">{'★'.repeat(feedback.rating)}{'☆'.repeat(5 - feedback.rating)}</td>
                 <td>{feedback.comments || 'No comments'}</td>
                 <td>
