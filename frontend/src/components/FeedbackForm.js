@@ -44,7 +44,7 @@ const FeedbackForm = () => {
 
     setIsSubmitting(true);
     try {
-      await axios.post('http://localhost:5000/feedback', formData);
+      await axios.post('https://student-feedback-app-1-6dwe.onrender.com/feedback', formData);
       alert('Feedback submitted successfully!');
       setFormData({
         studentname: '',

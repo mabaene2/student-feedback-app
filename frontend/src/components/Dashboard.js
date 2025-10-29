@@ -14,7 +14,7 @@ const Dashboard = () => {
 
   const fetchFeedbacks = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/feedback');
+      const response = await axios.get('https://student-feedback-app-1-6dwe.onrender.com/feedback');
       setFeedbacks(response.data);
     } catch (error) {
       console.error('Error fetching feedbacks:', error);
@@ -26,7 +26,7 @@ const Dashboard = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this feedback?')) {
       try {
-        await axios.delete(`http://localhost:5000/feedback/${id}`);
+        await axios.delete(`https://student-feedback-app-1-6dwe.onrender.com/feedback/${id}`);
         setFeedbacks(feedbacks.filter(f => f.id !== id));
       } catch (error) {
         console.error('Error deleting feedback:', error);
