@@ -3,7 +3,6 @@ services:
     name: feedback-app-backend
     runtime: node
     plan: free
-    rootDirectory: backend
     buildCommand: npm install
     startCommand: npm start
     envVars:
